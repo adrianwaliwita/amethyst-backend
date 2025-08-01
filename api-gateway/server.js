@@ -41,14 +41,14 @@ const swaggerOptions = {
                       properties: {
                         id: { type: "integer" },
                         name: { type: "string" },
-                        email: { type: "string" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                        email: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         post: {
           tags: ["Users"],
@@ -62,17 +62,17 @@ const swaggerOptions = {
                   type: "object",
                   properties: {
                     name: { type: "string" },
-                    email: { type: "string" }
-                  }
-                }
-              }
-            }
+                    email: { type: "string" },
+                  },
+                },
+              },
+            },
           },
           responses: {
             201: { description: "User created successfully" },
-            400: { description: "Bad request" }
-          }
-        }
+            400: { description: "Bad request" },
+          },
+        },
       },
       "/api/bookings": {
         get: {
@@ -80,17 +80,17 @@ const swaggerOptions = {
           summary: "Get all bookings",
           description: "Retrieve all bookings",
           responses: {
-            200: { description: "Successful response" }
-          }
+            200: { description: "Successful response" },
+          },
         },
         post: {
           tags: ["Bookings"],
           summary: "Create new booking",
           description: "Create a new booking",
           responses: {
-            201: { description: "Booking created successfully" }
-          }
-        }
+            201: { description: "Booking created successfully" },
+          },
+        },
       },
       "/api/providers": {
         get: {
@@ -98,17 +98,17 @@ const swaggerOptions = {
           summary: "Get all providers",
           description: "Retrieve all service providers",
           responses: {
-            200: { description: "Successful response" }
-          }
+            200: { description: "Successful response" },
+          },
         },
         post: {
           tags: ["Providers"],
           summary: "Create new provider",
           description: "Create a new service provider",
           responses: {
-            201: { description: "Provider created successfully" }
-          }
-        }
+            201: { description: "Provider created successfully" },
+          },
+        },
       },
       "/api/auth/login": {
         post: {
@@ -123,17 +123,17 @@ const swaggerOptions = {
                   type: "object",
                   properties: {
                     email: { type: "string" },
-                    password: { type: "string" }
-                  }
-                }
-              }
-            }
+                    password: { type: "string" },
+                  },
+                },
+              },
+            },
           },
           responses: {
             200: { description: "Login successful" },
-            401: { description: "Unauthorized" }
-          }
-        }
+            401: { description: "Unauthorized" },
+          },
+        },
       },
       "/api/auth/register": {
         post: {
@@ -149,17 +149,17 @@ const swaggerOptions = {
                   properties: {
                     name: { type: "string" },
                     email: { type: "string" },
-                    password: { type: "string" }
-                  }
-                }
-              }
-            }
+                    password: { type: "string" },
+                  },
+                },
+              },
+            },
           },
           responses: {
             201: { description: "Registration successful" },
-            400: { description: "Bad request" }
-          }
-        }
+            400: { description: "Bad request" },
+          },
+        },
       },
       "/api/services": {
         get: {
@@ -167,17 +167,17 @@ const swaggerOptions = {
           summary: "Get all services",
           description: "Retrieve all available services",
           responses: {
-            200: { description: "Successful response" }
-          }
+            200: { description: "Successful response" },
+          },
         },
         post: {
           tags: ["Services"],
           summary: "Create new service",
           description: "Create a new service",
           responses: {
-            201: { description: "Service created successfully" }
-          }
-        }
+            201: { description: "Service created successfully" },
+          },
+        },
       },
       "/api/reviews": {
         get: {
@@ -185,17 +185,17 @@ const swaggerOptions = {
           summary: "Get all reviews",
           description: "Retrieve all reviews",
           responses: {
-            200: { description: "Successful response" }
-          }
+            200: { description: "Successful response" },
+          },
         },
         post: {
           tags: ["Reviews"],
           summary: "Create new review",
           description: "Create a new review",
           responses: {
-            201: { description: "Review created successfully" }
-          }
-        }
+            201: { description: "Review created successfully" },
+          },
+        },
       },
       "/api/customers": {
         get: {
@@ -203,19 +203,19 @@ const swaggerOptions = {
           summary: "Get all customers",
           description: "Retrieve all customers",
           responses: {
-            200: { description: "Successful response" }
-          }
+            200: { description: "Successful response" },
+          },
         },
         post: {
           tags: ["Customers"],
           summary: "Create new customer",
           description: "Create a new customer",
           responses: {
-            201: { description: "Customer created successfully" }
-          }
-        }
-      }
-    }
+            201: { description: "Customer created successfully" },
+          },
+        },
+      },
+    },
   },
   apis: [],
 };
