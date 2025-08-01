@@ -1,0 +1,287 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== ENUMS =====
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ===== MODELS =====
+model User {
+  id           String    @id @default(uuid())
+  firebaseUID  String    @unique
+  email        String    @unique
+  name         String?
+  phone        String?
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  customer     Customer?
+  provider     Provider?
+  location     String?
+  isActive     Boolean   @default(true)
+  verified     Boolean   @default(false)
+  profileImage String?
+
+  @@index([email])
+  @@index([role])
+}
+
+model Customer {
+  id            String       @id @default(uuid())
+  userId        String       @unique
+  name          String
+  email         String       @unique
+  phone         String
+  addresses     Address[]
+  preferences   Preferences?
+  totalBookings Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  bookings      Booking[]
+  reviews       Review[]
+  user          User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Provider {
+  id                  String             @id @default(uuid())
+  userId              String             @unique
+  name                String
+  businessName        String?
+  bio                 String?
+  services            String[]
+  serviceCategories   String[]
+  experience          Int
+  available           Boolean            @default(true)
+  rating              Float              @default(0)
+  totalReviews        Int                @default(0)
+  completedBookings   Int                @default(0)
+  isApproved          Boolean            @default(false)
+  location            String
+  availability        AvailabilitySlot[]
+  documents           ProviderDocument[]
+  bankDetails         BankDetails?
+  addresses           Address[] // Changed to one-to-many
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  bookings            Booking[]
+  reviews             Review[]
+  user                User               @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isApproved])
+  @@index([available])
+}
+
+model ServiceCategory {
+  id          String    @id @default(uuid())
+  name        String
+  icon        String?
+  color       String?
+  image       String?
+  description String?
+  isActive    Boolean   @default(true)
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isActive])
+}
+
+model Service {
+  id           String          @id @default(uuid())
+  categoryId   String
+  name         String
+  price        Float
+  originalPrice Float?
+  discount     Float?          @default(0)
+  duration     Int
+  description  String?
+  image        String?
+  requirements String[]
+  tags         String[]
+  isActive     Boolean         @default(true)
+  category     ServiceCategory @relation(fields: [categoryId], references: [id])
+  bookings     Booking[]
+  reviews      Review[]
+
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+model Booking {
+  id                   String        @id @default(uuid())
+  bookingNumber        String?       @unique
+  customerId           String
+  providerId           String
+  serviceId            String
+  customerAddressId    String?
+  providerAddressId    String?
+  scheduledDate        String?
+  scheduledTime        String?
+  startTime            DateTime?
+  endTime              DateTime?
+  status               BookingStatus @default(PENDING)
+  paymentStatus        PaymentStatus? @default(PENDING)
+  paymentMethod        PaymentMethod?
+  pricing              Pricing?
+  specialInstructions  String?
+  completedAt          DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  customer             Customer      @relation(fields: [customerId], references: [id])
+  provider             Provider      @relation(fields: [providerId], references: [id])
+  service              Service       @relation(fields: [serviceId], references: [id])
+  review               Review?
+  payment              Payment?
+  customerAddress      Address?      @relation("CustomerAddress", fields: [customerAddressId], references: [id], map: "booking_customer_address_fkey")
+  providerAddress      Address?      @relation("ProviderAddress", fields: [providerAddressId], references: [id], map: "booking_provider_address_fkey")
+
+  @@index([customerId])
+  @@index([providerId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  bookingId  String   @unique
+  providerId String
+  customerId String
+  serviceId  String
+  rating     Int
+  comment    String?
+  images     String[]
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  provider   Provider @relation(fields: [providerId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+
+  @@index([providerId])
+  @@index([rating])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  bookingId       String        @unique
+  amount          Float
+  platformFee     Float
+  providerEarning Float
+  paymentMethod   String
+  paymentGateway  String?
+  transactionId   String?
+  status          PaymentStatus
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  booking         Booking       @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+// ===== NORMALIZED JSON TABLES =====
+model Address {
+  id        String   @id @default(uuid())
+  type      String?
+  label     String?
+  street    String?
+  city      String?
+  state     String?
+  zipCode   String?
+  latitude  Float?
+  longitude Float?
+  isDefault Boolean? @default(false)
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  providerId String?
+
+  customerBookings Booking[] @relation("CustomerAddress")
+  providerBookings Booking[] @relation("ProviderAddress")
+}
+
+model AvailabilitySlot {
+  id          String   @id @default(uuid())
+  day         String
+  isAvailable Boolean  @default(true)
+  slots       String[]
+  provider    Provider @relation(fields: [providerId], references: [id])
+  providerId  String
+}
+
+model ProviderDocument {
+  id          String   @id @default(uuid())
+  type        String
+  status      String?
+  documentUrl String?
+  provider    Provider @relation(fields: [providerId], references: [id])
+  providerId  String
+}
+
+model BankDetails {
+  id                String   @id @default(uuid())
+  accountNumber     String?
+  ifscCode          String?
+  accountHolderName String?
+  provider          Provider @relation(fields: [providerId], references: [id])
+  providerId        String   @unique
+}
+
+model Preferences {
+  id                   String   @id @default(uuid())
+  preferredProviders   String[]
+  favoriteServices     String[]
+  minPrice             Float?
+  maxPrice             Float?
+  preferredTimeSlots   String[]
+  customer             Customer @relation(fields: [customerId], references: [id])
+  customerId           String   @unique
+}
+
+model Pricing {
+  id           String  @id @default(uuid())
+  servicePrice Float
+  discount     Float?
+  finalPrice   Float
+  platformFee  Float
+  totalAmount  Float
+  booking      Booking @relation(fields: [bookingId], references: [id])
+  bookingId    String  @unique
+}
+
+model PaymentMethod {
+  id      String  @id @default(uuid())
+  type    String
+  name    String?
+  methodId String?
+  booking  Booking @relation(fields: [bookingId], references: [id])
+  bookingId String  @unique
+}

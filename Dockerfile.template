@@ -1,0 +1,24 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application files
+COPY . .
+
+# Copy shared prisma from parent directory
+COPY ../shared-prisma ./shared-prisma
+
+# Generate Prisma client
+RUN cd shared-prisma && npx prisma generate
+
+# Expose port (will be different for each service)
+EXPOSE PORT_NUMBER
+
+# Start the application
+CMD ["node", "server.js"]

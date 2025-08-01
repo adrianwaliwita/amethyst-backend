@@ -1,0 +1,131 @@
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: amethyst-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - user-service
+      - booking-service
+      - provider-service
+      - auth-service
+      - service-catalog-service
+      - review-service
+      - customer-service
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # User Service
+  user-service:
+    build: ./user-service
+    container_name: amethyst-user-service
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3001
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-service:
+    build: ./booking-service
+    container_name: amethyst-booking-service
+    ports:
+      - "3002:3002"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3002
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Provider Service
+  provider-service:
+    build: ./provider-service
+    container_name: amethyst-provider-service
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3003
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: amethyst-auth-service
+    ports:
+      - "3004:3004"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3004
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 7d
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Service Catalog Service
+  service-catalog-service:
+    build: ./service-catalog-service
+    container_name: amethyst-service-catalog-service
+    ports:
+      - "3005:3005"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3005
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Review Service
+  review-service:
+    build: ./review-service
+    container_name: amethyst-review-service
+    ports:
+      - "3006:3006"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3006
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+  # Customer Service
+  customer-service:
+    build: ./customer-service
+    container_name: amethyst-customer-service
+    ports:
+      - "3007:3007"
+    environment:
+      DATABASE_URL: postgresql://postgres.slwvajdicgmpenybiqzv:tOAlK98N7ZWuZ86h@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+      PORT: 3007
+    volumes:
+      - ./shared-prisma:/app/shared-prisma
+    networks:
+      - amethyst-network
+    restart: unless-stopped
+
+networks:
+  amethyst-network:
+    driver: bridge
